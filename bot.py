@@ -1,90 +1,113 @@
-import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import CommandStart
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+    MessageHandler,
+    ContextTypes,
+    filters
+)
 
-API_TOKEN = "8778878221:AAEZcgWZuJMgCKA3NGC4tDf_RGbUh6tvwtI"
+# توکن جدیدت رو اینجا بذار
+TOKEN = "YOUR_BOT_TOKEN"
 
-# سه کانال عضویت اجباری
+# کانال‌های عضویت اجباری
 CHANNELS = [
     "@AKVPN001",
-    "@Hezb7Hitlerion",
-    "@CHANNEL_3"
+    "@Hezb7Hitlerion"   # فقط یوزرنیم تلگرام است
 ]
 
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher()
-
-# لیست فیلم‌ها
+# فیلم‌ها (بعداً File_ID را جایگزین کن)
 FILMS = {
-    "film1": "BAACAgQAAxkBAANTah2YB-skzr-05pMuHaT_Qijh-s8AAkAVAAIt2GlQNbCet5XRhHU7BA",
+    "film1": "FILE_ID_FILM_1",
     "film2": "FILE_ID_FILM_2",
     "film3": "FILE_ID_FILM_3"
 }
 
-# ذخیره فیلم انتخاب‌شده برای هر کاربر
-user_selected_film = {}
-
+# دکمه‌های پهن عضویت
 def membership_keyboard():
-    kb = InlineKeyboardBuilder()
-    kb.button(text="📢 عضویت کانال 1", url="https://t.me/AKVPN001")
-    kb.button(text="📢 عضویت کانال 2", url="https://t.me/.Hezb7Hitlerion")
-    kb.button(text="📢 عضویت کانال 3", url="https://t.me/CHANNEL_3")
-    kb.button(text="🟢 عضو شدم", callback_data="check_join")
-    kb.adjust(1)
-    return kb.as_markup()
+    keyboard = [
+        [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
+        [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
+        [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
-async def check_all_channels(user_id):
+# چک عضویت
+async def check_membership(user_id, context: ContextTypes.DEFAULT_TYPE):
     for ch in CHANNELS:
         try:
-            member = await bot.get_chat_member(ch, user_id)
+            member = await context.bot.get_chat_member(ch, user_id)
             if member.status == "left":
                 return False
         except:
             return False
     return True
 
-@dp.message(CommandStart())
-async def start(message: types.Message):
-    user_id = message.from_user.id
-    args = message.text.split()
-
-    film_key = args[1] if len(args) > 1 else None
-
-    # ذخیره فیلم انتخاب‌شده
-    if film_key in FILMS:
-        user_selected_film[user_id] = film_key
+# /start + لینک اختصاصی
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    args = context.args
+    film_key = args[0] if args else None
 
     # چک عضویت
-    if not await check_all_channels(user_id):
-        await message.answer("⚠️ برای دریافت فیلم باید در هر ۳ کانال عضو شوید 👇", reply_markup=membership_keyboard())
+    if not await check_membership(user_id, context):
+        await update.message.reply_text(
+            "⚠️ برای دریافت فیلم باید عضو کانال‌ها بشی:",
+            reply_markup=membership_keyboard()
+        )
         return
 
     # ارسال فیلم
     if film_key in FILMS:
-        await message.answer("🎬 در حال ارسال فیلم…")
-        await bot.send_video(chat_id=message.chat.id, video=FILMS[film_key])
+        await update.message.reply_text("🎬 در حال ارسال فیلم…")
+        await context.bot.send_video(chat_id=user_id, video=FILMS[film_key])
     else:
-        await message.answer("❌ لینک فیلم اشتباهه یا فیلمی انتخاب نشده")
+        await update.message.reply_text("هیچ فیلمی انتخاب نشده!")
 
-@dp.callback_query(lambda c: c.data == "check_join")
-async def check_join_button(callback: types.CallbackQuery):
-    user_id = callback.from_user.id
+# دکمه «عضو شدم»
+async def check_join_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
 
-    if not await check_all_channels(user_id):
-        await callback.answer("هنوز عضو هر ۳ کانال نشدی!", show_alert=True)
+    if not await check_membership(user_id, context):
+        await query.answer("❌ هنوز عضو نشدی!", show_alert=True)
         return
 
-    film_key = user_selected_film.get(user_id)
+    await query.answer("✔️ عضویت تایید شد")
+    await query.message.reply_text("الان دوباره روی لینک فیلم بزن 🌟")
 
-    if film_key:
-        await callback.message.answer("✔️ عضویت تایید شد\n🎬 در حال ارسال فیلم…")
-        await bot.send_video(chat_id=callback.message.chat.id, video=FILMS[film_key])
+# دستورات مستقیم
+async def film1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
+
+async def film2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
+
+async def film3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
+
+# گرفتن File_ID از ویدیو
+async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.video:
+        file_id = update.message.video.file_id
+        await update.message.reply_text(f"🎬 File_ID:\n{file_id}")
     else:
-        await callback.message.answer("❌ فیلمی انتخاب نشده!")
+        await update.message.reply_text("⚠️ فقط ویدیو بفرست تا File_ID بدم.")
 
-async def main():
-    await dp.start_polling(bot)
+# اجرای ربات
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("film1", film1))
+    app.add_handler(CommandHandler("film2", film2))
+    app.add_handler(CommandHandler("film3", film3))
+    app.add_handler(CallbackQueryHandler(check_join_button))
+    app.add_handler(MessageHandler(filters.VIDEO, get_file_id))
+
+    print("Bot started…")
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

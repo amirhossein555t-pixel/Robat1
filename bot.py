@@ -19,8 +19,8 @@ CHANNELS = [
 
 # فیلم‌ها (بعداً File_ID را جایگزین کن)
 FILMS = {
-    "film1": "FILE_ID_FILM_1",
-    "film2": "FILE_ID_FILM_2",
+    "film1": "BAACAgQAAxkBAAOPah3X15ytGUKlxOhUOksygVB6yIkAAk8YAAKXTElTXNCjNI9R1II7BA",
+    "film2": "BAACAgQAAxkBAANTah2YB-skzr-05pMuHaT_Qijh-s8AAkAVAAIt2GlQNbCet5XRhHU7BA",
     "film3": "FILE_ID_FILM_3"
 }
 

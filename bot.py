@@ -9,7 +9,7 @@ from telegram.ext import (
 )
 
 # توکن جدیدت رو اینجا بذار
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = "8778878221:AAEZcgWZuJMgCKA3NGC4tDf_RGbUh6tvwtI"
 
 # کانال‌های عضویت اجباری
 CHANNELS = [

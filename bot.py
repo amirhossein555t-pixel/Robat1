@@ -14,14 +14,14 @@ TOKEN = "8778878221:AAEZcgWZuJMgCKA3NGC4tDf_RGbUh6tvwtI"
 # کانال‌های عضویت اجباری
 CHANNELS = [
     "@AKVPN001",
-    "@Hezb7Hitlerion"   # فقط یوزرنیم تلگرام است
+    "@Hezb7Hitlerion"
 ]
 
-# فیلم‌ها (بعداً File_ID را جایگزین کن)
+# فیلم‌ها (File_ID ها اضافه شد)
 FILMS = {
     "film1": "BAACAgQAAxkBAAOPah3X15ytGUKlxOhUOksygVB6yIkAAk8YAAKXTElTXNCjNI9R1II7BA",
     "film2": "BAACAgQAAxkBAANTah2YB-skzr-05pMuHaT_Qijh-s8AAkAVAAIt2GlQNbCet5XRhHU7BA",
-    "film3": "FILE_ID_FILM_3"
+    "film3": "FILE_ID_FILM_3"   # اگر فیلم سوم داری اینجا بذار
 }
 
 # دکمه‌های پهن عضویت
@@ -50,7 +50,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
     film_key = args[0] if args else None
 
-    # چک عضویت
+    # ذخیره فیلمی که کاربر درخواست کرده
+    context.user_data["requested_film"] = film_key
+
     if not await check_membership(user_id, context):
         await update.message.reply_text(
             "⚠️ برای دریافت فیلم باید عضو کانال‌ها بشی:",
@@ -58,7 +60,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # ارسال فیلم
     if film_key in FILMS:
         await update.message.reply_text("🎬 در حال ارسال فیلم…")
         await context.bot.send_video(chat_id=user_id, video=FILMS[film_key])
@@ -75,7 +76,15 @@ async def check_join_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     await query.answer("✔️ عضویت تایید شد")
-    await query.message.reply_text("الان دوباره روی لینک فیلم بزن 🌟")
+
+    # فیلمی که کاربر درخواست کرده بود
+    film_key = context.user_data.get("requested_film")
+
+    if film_key in FILMS:
+        await query.message.reply_text("🎬 عضویت تأیید شد — در حال ارسال فیلم…")
+        await context.bot.send_video(chat_id=user_id, video=FILMS[film_key])
+    else:
+        await query.message.reply_text("فیلمی برای ارسال پیدا نشد!")
 
 # دستورات مستقیم
 async def film1(update: Update, context: ContextTypes.DEFAULT_TYPE):

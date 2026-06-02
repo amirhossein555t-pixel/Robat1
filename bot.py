@@ -15,11 +15,12 @@ TOKEN = "8778878221:AAEZcgWZuJMgCKA3NGC4tDf_RGbUh6tvwtI"
 # کانال‌های عضویت اجباری
 CHANNELS = [
     "@AKVPN001",
-    "@Hezb7Hitlerion",  # فقط به عنوان یوزرنیم تلگرام استفاده می‌شود
-    "@takporn111"  # ← امیر اینجا یوزرنیم کانال سوم رو بذار
+    "@Hezb7Hitlerion",          # فقط یوزرنیم تلگرام
+    "@takporn111",  # ← امیر اینجا کانال سوم
+    "@filmsoperzirnevis7"   # ← امیر اینجا کانال چهارم
 ]
 
-# فیلم‌ها (۱۰ تا به ترتیب ۱ تا ۱۰)
+# فیلم‌ها (۱۰ تا)
 FILMS = {
     "film1": "BAACAgQAAxkBAAPEah6LOE_vcpDewjZPJIJzVYdy6yYAAmAXAAL0MvBSsPoIl8HMNCo7BA",
     "film2": "BAACAgQAAxkBAAPGah6LbKBL6YSsTzC0FQoXFXGqCKAAAmcXAALzxRhT5n24uZPupHQ7BA",
@@ -33,64 +34,60 @@ FILMS = {
     "film10": "BAACAgQAAxkBAAPWah6QqbzbjbwyHJBKdzkjEhQutvgAArYYAALsoChRXUXgdQOa5TE7BA",
 }
 
-# شمارش بازدید هر فیلم
+# شمارش بازدید
 VIEWS = {key: 0 for key in FILMS.keys()}
 
 
-def membership_keyboard() -> InlineKeyboardMarkup:
+def membership_keyboard():
     keyboard = [
         [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
         [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
-        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/takporn111")],  # ← امیر لینک کانال سوم
+        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/takporn111")],
+        [InlineKeyboardButton("📢 عضویت در کانال 4", url="https://t.me/filmsoperzirnevis7")],
         [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 
-async def check_membership(user_id: int, context: ContextTypes.DEFAULT_TYPE) -> bool:
+async def check_membership(user_id, context):
     for ch in CHANNELS:
-        if ch == "CHANNEL_3_USERNAME_HERE":
-            continue  # هنوز کانال سوم اضافه نشده
+        if "CHANNEL_" in ch:
+            continue  # کانال خالی هنوز اضافه نشده
         try:
             member = await context.bot.get_chat_member(ch, user_id)
             if member.status == "left":
                 return False
-        except Exception:
+        except:
             return False
     return True
 
 
-async def send_and_schedule_delete(context, chat_id, warning_id, video_id):
+async def send_and_delete(context, chat_id, warn_id, video_id):
     await asyncio.sleep(20)
     try:
         await context.bot.delete_message(chat_id, video_id)
     except:
         pass
     try:
-        await context.bot.delete_message(chat_id, warning_id)
+        await context.bot.delete_message(chat_id, warn_id)
     except:
         pass
 
 
-async def send_film_flow(update, context, film_key, from_callback=False):
+async def send_film(update, context, film_key, from_callback=False):
     user_id = update.effective_user.id
-
-    if film_key not in FILMS:
-        target = update.callback_query.message if from_callback else update.message
-        await target.reply_text("فیلمی برای ارسال پیدا نشد!")
-        return
 
     VIEWS[film_key] += 1
 
     target = update.callback_query.message if from_callback else update.message
 
-    await target.reply_text(f"👁 این فیلم تا الان {VIEWS[film_key]} بار از طریق ربات دیده شده.")
+    await target.reply_text(f"👁 این فیلم تا الان {VIEWS[film_key]} بار دیده شده.")
 
-    warning_msg = await target.reply_text("⚠️ این فیلم ۲۰ ثانیه دیگه پاک میشه.")
-    video_msg = await context.bot.send_video(chat_id=user_id, video=FILMS[film_key])
+    warn = await target.reply_text("⚠️ این فیلم ۲۰ ثانیه دیگه پاک میشه.")
+    video = await context.bot.send_video(chat_id=user_id, video=FILMS[film_key])
 
     context.application.create_task(
-        send_and_schedule_delete(context, user_id, warning_msg.message_id, video_msg.message_id)
+        send_and_delete(context, user_id, warn.message_id, video.message_id)
     )
 
 
@@ -102,17 +99,14 @@ async def start(update, context):
     context.user_data["requested_film"] = film_key
 
     if not await check_membership(user_id, context):
-        await update.message.reply_text(
+        msg = await update.message.reply_text(
             "⚠️ برای دریافت فیلم باید عضو کانال‌ها بشی:",
             reply_markup=membership_keyboard(),
         )
+        context.user_data["join_msg_id"] = msg.message_id
         return
 
-    if not film_key:
-        await update.message.reply_text("هیچ فیلمی انتخاب نشده! از لینک اختصاصی یا /film1 تا /film10 استفاده کن.")
-        return
-
-    await send_film_flow(update, context, film_key, from_callback=False)
+    await send_film(update, context, film_key)
 
 
 async def check_join_button(update, context):
@@ -125,34 +119,27 @@ async def check_join_button(update, context):
 
     await query.answer("✔️ عضویت تایید شد")
 
+    # پاک کردن پیام عضویت اجباری
+    join_msg_id = context.user_data.get("join_msg_id")
+    if join_msg_id:
+        try:
+            await context.bot.delete_message(query.message.chat_id, join_msg_id)
+        except:
+            pass
+
+    # پاک کردن خود پیام دکمه‌ها
+    try:
+        await query.message.delete()
+    except:
+        pass
+
     film_key = context.user_data.get("requested_film")
-
-    if not film_key:
-        await query.message.reply_text("فیلمی انتخاب نشده؛ دوباره روی لینک فیلم بزن.")
-        return
-
-    await send_film_flow(update, context, film_key, from_callback=True)
-
-
-async def film_command(update, context, film_key):
-    context.args = [film_key]
-    await start(update, context)
-
-
-# ساخت دستورات ۱ تا ۱۰
-for i in range(1, 11):
-    exec(f"""
-async def film{i}(update, context):
-    await film_command(update, context, "film{i}")
-""")
+    await send_film(update, context, film_key, from_callback=True)
 
 
 async def get_file_id(update, context):
     if update.message.video:
-        file_id = update.message.video.file_id
-        await update.message.reply_text(f"🎬 File_ID:\n{file_id}")
-    else:
-        await update.message.reply_text("⚠️ فقط ویدیو بفرست تا File_ID بدم.")
+        await update.message.reply_text(f"🎬 File_ID:\n{update.message.video.file_id}")
 
 
 def main():
@@ -161,7 +148,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
 
     for i in range(1, 11):
-        app.add_handler(CommandHandler(f"film{i}", globals()[f"film{i}"]))
+        app.add_handler(CommandHandler(f"film{i}", lambda u, c, x=i: start(u, c)))
 
     app.add_handler(CallbackQueryHandler(check_join_button))
     app.add_handler(MessageHandler(filters.VIDEO, get_file_id))

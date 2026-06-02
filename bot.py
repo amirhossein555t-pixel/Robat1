@@ -41,7 +41,7 @@ def membership_keyboard() -> InlineKeyboardMarkup:
     keyboard = [
         [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
         [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
-        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/CHANNEL_3_USERNAME_HERE")],  # ← امیر لینک کانال سوم
+        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/takporn111")],  # ← امیر لینک کانال سوم
         [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")],
     ]
     return InlineKeyboardMarkup(keyboard)

@@ -42,7 +42,7 @@ def membership_keyboard():
     keyboard = [
         [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
         [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
-        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/takporn111")],
+        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/+yL7GiVn_DXpiMzE0")],
         [InlineKeyboardButton("📢 عضویت در کانال 4", url="https://t.me/filmsoperzirnevis7")],
         [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")],
     ]

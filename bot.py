@@ -16,7 +16,6 @@ TOKEN = "8778878221:AAEZcgWZuJMgCKA3NGC4tDf_RGbUh6tvwtI"
 CHANNELS = [
     "@AKVPN001",
     "@Hezb7Hitlerion",          # فقط یوزرنیم تلگرام
-    "@takporn111",  # ← امیر اینجا کانال سوم
     "@filmsoperzirnevis7"   # ← امیر اینجا کانال چهارم
 ]
 
@@ -42,8 +41,7 @@ def membership_keyboard():
     keyboard = [
         [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
         [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
-        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/+yL7GiVn_DXpiMzE0")],
-        [InlineKeyboardButton("📢 عضویت در کانال 4", url="https://t.me/filmsoperzirnevis7")],
+        [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/filmsoperzirnevis7")],
         [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")],
     ]
     return InlineKeyboardMarkup(keyboard)

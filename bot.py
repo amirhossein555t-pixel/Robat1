@@ -17,7 +17,7 @@ CHANNELS = [
     "@AKVPN001",
     "@Hezb7Hitlerion",
     "@filmsoperzirnevis7",
-    "@sexsazad001"   # 🔥 کانال جدیدی که گفتی
+    "@sexsazad001"   # کانال جدیدی که گفتی
 ]
 
 # -------------------------
@@ -35,7 +35,6 @@ FILMS = {
     "film9": "BAACAgQAAxkBAAPUah6QX8Rr4kSKp2tg5aD5xC1lJh0AAukZAAKtZAhRopyCes6bSEo7BA",
     "film10": "BAACAgQAAxkBAAPWah6QqbzbjbwyHJBKdzkjEhQutvgAArYYAALsoChRXUXgdQOa5TE7BA",
 
-    # جدیدها
     "film11": "BAACAgQAAxkBAAIDMmoe9njXPpRX0pSc-9NnTKctWbM7AAK3GwACd7dJUavBDSB3l5OjOwQ",
     "film12": "BAACAgQAAxkBAAIDNGoe9qH7x6I0baX9JwqlE3z111zcAAK9GwACd7dJUZDEGLie5aqROwQ",
     "film13": "BAACAgQAAxkBAAIDNmoe9s-AzfK2ygsGIJTze20EIHyTAAJQGQACWVBZUcu43L2YWsAaOwQ",
@@ -57,7 +56,7 @@ def membership_keyboard():
         [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
         [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
         [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/filmsoperzirnevis7")],
-        [InlineKeyboardButton("📢 عضویت در کانال 4", url="https://t.me/sexsazad001")],  # 🔥 کانال جدید
+        [InlineKeyboardButton("📢 عضویت در کانال 4", url="https://t.me/sexsazad001")],
         [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")],
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -165,7 +164,6 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("stats", stats))
 
-    # 20 فیلم
     for i in range(1, 21):
         def make_handler(x):
             return lambda update, context: start(update, context)

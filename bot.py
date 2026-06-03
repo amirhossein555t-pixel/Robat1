@@ -9,15 +9,21 @@ from telegram.ext import (
     filters,
 )
 
+توکن ربات
 TOKEN = "8778878221:AAEZcgWZuJMgCKA3NGC4tDf_RGbUh6tvwtI"
 
+کانال‌های عضویت اجباری
 CHANNELS = [
     "@AKVPN001",
-    "@Hezb7Hitlerion",
-    "@filmsoperzirnevis7",
-    "@sexsazad001"
+    "@sexsazad001",
+    "@filmsoperzirnevis7"
 ]
 
+-------------------------
+
+20 FILMS
+
+-------------------------
 FILMS = {
     "film1": "BAACAgQAAxkBAAPEah6LOE_vcpDewjZPJIJzVYdy6yYAAmAXAAL0MvBSsPoIl8HMNCo7BA",
     "film2": "BAACAgQAAxkBAAPGah6LbKBL6YSsTzC0FQoXFXGqCKAAAmcXAALzxRhT5n24uZPupHQ7BA",
@@ -29,25 +35,38 @@ FILMS = {
     "film8": "BAACAgQAAxkBAAPSah6QNRMQlkEBu3D8okQgL0vYEtoAApEbAAK4IfFQNqk4rauoF_o7BA",
     "film9": "BAACAgQAAxkBAAPUah6QX8Rr4kSKp2tg5aD5xC1lJh0AAukZAAKtZAhRopyCes6bSEo7BA",
     "film10": "BAACAgQAAxkBAAPWah6QqbzbjbwyHJBKdzkjEhQutvgAArYYAALsoChRXUXgdQOa5TE7BA",
+
+    # جدیدها
+    "film11": "BAACAgQAAxkBAAIDMmoe9njXPpRX0pSc-9NnTKctWbM7AAK3GwACd7dJUavBDSB3l5OjOwQ",
+    "film12": "BAACAgQAAxkBAAIDNGoe9qH7x6I0baX9JwqlE3z111zcAAK9GwACd7dJUZDEGLie5aqROwQ",
+    "film13": "BAACAgQAAxkBAAIDNmoe9s-AzfK2ygsGIJTze20EIHyTAAJQGQACWVBZUcu43L2YWsAaOwQ",
+    "film14": "BAACAgQAAxkBAAIDOGoe9utQk895m6KW17OLMc_AykimAALjGQACWVBZUfFmhe5JUDxaOwQ",
+    "film15": "BAACAgQAAxkBAAIDOmoe9xBs-jqZdfeagmErInj5ESlrAAK2GwACx8lhUe3XkPsdKoqFOwQ",
+    "film16": "BAACAgQAAxkBAAIDRGoe95XN-8xQF7i8WI5vBDJCl4iiAAL3GgACx8lpUX-9GlBESJkAATsE",
+    "film17": "BAACAgQAAxkBAAIDRmoe98uTxzLMgx9JCwybw1nKN-nFAALUGwACx8lpUVhsSR-aFSksOwQ",
+    "film18": "BAACAgQAAxkBAAIDSGoe9_VdtxCxzSA7Twc7DK8iNyK1AAILHAACx8lpUUlZTmfhColsOwQ",
+    "film19": "BAACAgQAAxkBAAIDSmoe-BpqA7uQu9LsHzr5hDFKfGYbAAIbKAACOiaIUY-GKp6Q4VolOwQ",
+    "film20": "BAACAgQAAxkBAAIDTWoe-EK3GHdeCnIf-pedexkQ2RUMAALRHAACDNmoUcRcFAj-mnELOwQ",
 }
 
+شمارش بازدید
 VIEWS = {key: 0 for key in FILMS.keys()}
 
 
 def membership_keyboard():
-    return InlineKeyboardMarkup([
+    keyboard = [
         [InlineKeyboardButton("📢 عضویت در کانال 1", url="https://t.me/AKVPN001")],
-        [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/Hezb7Hitlerion")],
+        [InlineKeyboardButton("📢 عضویت در کانال 2", url="https://t.me/sexsazad001")],
         [InlineKeyboardButton("📢 عضویت در کانال 3", url="https://t.me/filmsoperzirnevis7")],
-        [InlineKeyboardButton("📢 عضویت در کانال 4", url="https://t.me/sexsazad001")],
-        [InlineKeyboardButton("🟢 عضو شدم", callback_data="check_join")]
-    ])
+        [InlineKeyboardButton("🟢 عضو شدم", callbackdata="checkjoin")],
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 
-async def check_membership(user_id, context):
+async def checkmembership(userid, context):
     for ch in CHANNELS:
         try:
-            member = await context.bot.get_chat_member(ch, user_id)
+            member = await context.bot.getchatmember(ch, user_id)
             if member.status == "left":
                 return False
         except:
@@ -55,85 +74,109 @@ async def check_membership(user_id, context):
     return True
 
 
-async def send_and_delete(context, chat_id, warn_id, video_id):
+async def sendanddelete(context, chatid, warnid, video_id):
     await asyncio.sleep(20)
-    for msg in [video_id, warn_id]:
+    for msg in [videoid, warnid]:
         try:
-            await context.bot.delete_message(chat_id, msg)
+            await context.bot.deletemessage(chatid, msg)
         except:
             pass
 
 
-async def send_film_direct(update, context, film_key):
-    user_id = update.effective_user.id
+async def sendfilm(update, context, filmkey, from_callback=False):
+    userid = update.effectiveuser.id
+
     VIEWS[film_key] += 1
 
-    await update.effective_message.reply_text(f"👁 این فیلم تا الان {VIEWS[film_key]} بار دیده شده.")
-    warn = await update.effective_message.reply_text("⚠️ این فیلم ۲۰ ثانیه دیگه پاک میشه.")
-    video = await context.bot.send_video(chat_id=user_id, video=FILMS[film_key])
+    target = update.callbackquery.message if fromcallback else update.message
+
+    await target.replytext(f"👁 این فیلم تا الان {VIEWS[filmkey]} بار دیده شده.")
+    warn = await target.reply_text("⚠️ این فیلم ۲۰ ثانیه دیگه پاک میشه.")
+    video = await context.bot.sendvideo(chatid=userid, video=FILMS[filmkey])
 
     context.application.create_task(
-        send_and_delete(context, user_id, warn.message_id, video.message_id)
+        sendanddelete(context, userid, warn.messageid, video.message_id)
     )
 
 
 async def start(update, context):
+    userid = update.effectiveuser.id
     args = context.args
-    if not args:
+    film_key = args[0] if args else None
+
+    if film_key not in FILMS:
         await update.message.reply_text("❌ لینک فیلم اشتباه است.")
         return
 
-    film_key = args[0]
+    context.userdata["requestedfilm"] = film_key
 
-    if film_key not in FILMS:
-        await update.message.reply_text("❌ فیلم پیدا نشد.")
-        return
-
-    update.user_data["film"] = film_key
-
-    if not await check_membership(update.effective_user.id, context):
-        await update.message.reply_text(
+    if not await checkmembership(userid, context):
+        msg = await update.message.reply_text(
             "⚠️ برای دریافت فیلم باید عضو کانال‌ها بشی:",
-            reply_markup=membership_keyboard()
+            replymarkup=membershipkeyboard(),
         )
+        context.userdata["joinmsgid"] = msg.messageid
         return
 
-    await send_film_direct(update, context, film_key)
+    await sendfilm(update, context, filmkey)
 
 
-async def check_join_button(update, context):
+async def checkjoinbutton(update, context):
     query = update.callback_query
-    user_id = query.from_user.id
+    userid = query.fromuser.id
 
-    if not await check_membership(user_id, context):
+    if not await checkmembership(userid, context):
         await query.answer("❌ هنوز عضو نشدی!", show_alert=True)
         return
 
     await query.answer("✔️ عضویت تایید شد")
+
+    joinmsgid = context.userdata.get("joinmsg_id")
+    if joinmsgid:
+        try:
+            await context.bot.deletemessage(query.message.chatid, joinmsgid)
+        except:
+            pass
 
     try:
         await query.message.delete()
     except:
         pass
 
-    film_key = update.user_data.get("film")
+    filmkey = context.userdata.get("requested_film")
+    await sendfilm(update, context, filmkey, from_callback=True)
 
-    if not film_key:
-        await query.message.reply_text("❌ خطا: فیلم پیدا نشد. دوباره لینک فیلم رو بزن.")
-        return
 
-    await send_film_direct(update, context, film_key)
+async def stats(update, context):
+    text = "📊 آمار کل بازدیدها:\n\n"
+    for key, value in VIEWS.items():
+        text += f"{key}: {value} بازدید\n"
+    await update.message.reply_text(text)
+
+
+async def getfileid(update, context):
+    if update.message.video:
+        await update.message.replytext(f"🎬 FileID:\n{update.message.video.file_id}")
 
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(check_join_button))
+    app.add_handler(CommandHandler("stats", stats))
+
+    # 20 فیلم
+    for i in range(1, 21):
+        def make_handler(x):
+            return lambda update, context: start(update, context)
+        app.addhandler(CommandHandler(f"film{i}", makehandler(i)))
+
+    app.addhandler(CallbackQueryHandler(checkjoin_button))
+    app.addhandler(MessageHandler(filters.VIDEO, getfile_id))
 
     print("Bot started…")
     app.run_polling()
 
 
-if __name__ == "__main__":
+if name == "main":
     main()

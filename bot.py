@@ -17,7 +17,7 @@ CHANNELS = [
     "@AKVPN001",
     "@Hezb7Hitlerion",
     "@filmsoperzirnevis7",
-    "@sexsazad001"   # کانال جدیدی که گفتی
+    "@sexsazad001"
 ]
 
 # -------------------------
@@ -130,6 +130,12 @@ async def check_join_button(update, context):
 
     await query.answer("✔️ عضویت تایید شد")
 
+    # پاک کردن پیام‌ها
+    try:
+        await query.message.delete()
+    except:
+        pass
+
     join_msg_id = context.user_data.get("join_msg_id")
     if join_msg_id:
         try:
@@ -137,13 +143,10 @@ async def check_join_button(update, context):
         except:
             pass
 
-    try:
-        await query.message.delete()
-    except:
-        pass
-
+    # ارسال فیلم بدون نیاز به کلیک دوباره
     film_key = context.user_data.get("requested_film")
-    await send_film(update, context, film_key, from_callback=True)
+    if film_key:
+        await send_film(update, context, film_key, from_callback=True)
 
 
 async def stats(update, context):

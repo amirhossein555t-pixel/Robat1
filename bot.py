@@ -21,10 +21,10 @@ CHANNELS = [
 
 # گروه پرایوت (اد اجباری)
 PRIVATE_GROUP_LINK = "https://t.me/+giTXzRnwDmkxZjBk"
-PRIVATE_GROUP_ID = -1002295085920   # آماده برای استفاده
+PRIVATE_GROUP_ID = -1002295085920   # اینو درست استخراج کردم
 
 # -------------------------
-# 20 FILMS قبلی + 30 FILMS جدید (خالی)
+# 20 فیلم قبلی + 30 فیلم جدید (خالی)
 # -------------------------
 FILMS = {
     # 20 فیلم قبلی
@@ -50,39 +50,8 @@ FILMS = {
     "film19": "BAACAgQAAxkBAAIDSmoe-BpqA7uQu9LsHzr5hDFKfGYbAAIbKAACOiaIUY-GKp6Q4VolOwQ",
     "film20": "BAACAgQAAxkBAAIDTWoe-EK3GHdeCnIf-pedexkQ2RUMAALRHAACDNmoUcRcFAj-mnELOwQ",
 
-    # -------------------------
     # 30 فیلم جدید (خالی)
-    # -------------------------
-    "film21": "",
-    "film22": "",
-    "film23": "",
-    "film24": "",
-    "film25": "",
-    "film26": "",
-    "film27": "",
-    "film28": "",
-    "film29": "",
-    "film30": "",
-    "film31": "",
-    "film32": "",
-    "film33": "",
-    "film34": "",
-    "film35": "",
-    "film36": "",
-    "film37": "",
-    "film38": "",
-    "film39": "",
-    "film40": "",
-    "film41": "",
-    "film42": "",
-    "film43": "",
-    "film44": "",
-    "film45": "",
-    "film46": "",
-    "film47": "",
-    "film48": "",
-    "film49": "",
-    "film50": "",
+    **{f"film{i}": "" for i in range(21, 51)}**
 }
 
 # شمارش بازدید

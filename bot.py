@@ -120,6 +120,7 @@ async def start(update, context):
     await send_film(update, context, film_key)
 
 
+# نسخه ضد گیر کردن
 async def check_join_button(update, context):
     query = update.callback_query
     user_id = query.from_user.id
@@ -130,7 +131,6 @@ async def check_join_button(update, context):
 
     await query.answer("✔️ عضویت تایید شد")
 
-    # پاک کردن پیام‌ها
     try:
         await query.message.delete()
     except:
@@ -143,10 +143,23 @@ async def check_join_button(update, context):
         except:
             pass
 
-    # ارسال فیلم بدون نیاز به کلیک دوباره
+    # گرفتن فیلم از context
     film_key = context.user_data.get("requested_film")
-    if film_key:
-        await send_film(update, context, film_key, from_callback=True)
+
+    # اگر context خالی بود → از متن start استخراج کن
+    if not film_key:
+        try:
+            text = query.message.text
+            if "/start" in text:
+                film_key = text.replace("/start", "").strip()
+        except:
+            pass
+
+    if not film_key:
+        await query.message.reply_text("❌ خطا: فیلم پیدا نشد. دوباره لینک فیلم رو بزن.")
+        return
+
+    await send_film(update, context, film_key, from_callback=True)
 
 
 async def stats(update, context):
